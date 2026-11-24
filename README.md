@@ -25,7 +25,11 @@ Control mapping for Pokémon FireRed/LeafGreen on Gen1Recomp (mod API 3): every 
 | Defaults (asks twice) | R | X (left button) | Defaults |
 | Close | Esc, Backspace, X, F8 | B, START | Close |
 
-After choosing a cell, press the key or button you want. Every key and button is an answer there, so the wait ends by itself after 6 seconds or with **Cancel**. An input given to one action is taken from the action that had it (within the same context).
+After choosing a cell, press the key or button you want. Every key and button is an answer there, so the wait ends by itself after 6 seconds or with **Cancel**. Nothing is taken from other actions: if the input already does something else that can happen in the same place, both cells turn red and the note under the list says which (see Conflicts).
+
+## Conflicts
+
+Each action has the places where it can happen: field shortcuts on the map only, L and R in menus and battles only, everything else everywhere. Two actions on one input are a conflict only when they share a place. Conflicts are allowed but marked in red and counted in the title; only one of the two answers.
 
 ## Compatibility
 

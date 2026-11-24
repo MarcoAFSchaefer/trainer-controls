@@ -12,7 +12,9 @@ trainer_controls/
 
 An input is a token: `key:<name>`, `mouse:<n>`, `wheel:up|down`, `pad:<name>` (SDL button names, `triggerleft`/`triggerright`, `ls_*`/`rs_*` for stick directions, `raw<N>` for unnamed buttons). An action has an id, a kind (`hold` a game button, `tap`, or `field`) and four slots (1-2 keyboard/mouse, 3-4 gamepad).
 
-`bindings[action][slot] = token` is saved in the mod cache as `bindings/v1` (one `action slot token` per line). Two indexes are built from it, `field` and `general`: token to action. A press looks in `field` first when the player is on the map with nothing open, then in `general`.
+`bindings[action][slot] = token` is saved in the mod cache as `bindings/v1` (one `action slot token` per line). From it: `users[token]` (every action on that input, in list order) and two indexes, `map` and `menus`, giving the one action that answers in each place. On the map a field shortcut answers first, otherwise the first action in the list; in menus and battles the first non-field action.
+
+`clash(a, b)` is true when both can happen on the map (`onMap`: everything but L and R) or both in menus (`inMenus`: everything but field shortcuts). `conflicts(action, slot)` lists the actions that share the slot's input and clash; the screen marks those cells.
 
 ## Reading the devices
 

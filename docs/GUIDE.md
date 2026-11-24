@@ -17,7 +17,11 @@ Each row is an action; the first two cells are for keyboard and mouse, the last 
 - **Field shortcuts** work while you walk on the map and do what the Pokémon menu or the Bag would: Cut needs the badge, a Pokémon that knows Cut and a tree in front of you. Because they only act on the map, they may share a button with something else: put Cut on R1 and R1 still is R in the Bag.
 - **Mods**: the controls screen, and actions other mods add.
 
-Giving an input to an action takes it from the action that had it; the message under the list says which.
+To empty a cell: choose it and press Clear (Y on the gamepad, Del on the keyboard), or press **Remove** while it waits for an input.
+
+## Conflicts
+
+An input may be given to more than one action. That is fine when the two can never happen in the same place: field shortcuts only act on the map, L and R only in menus and battles, so R1 can be Cut and R. When both can happen in the same place (R2 as Bicycle and as Speed up: both on the map), it is a conflict: the cells are outlined in red with a "!", the note under the list names the other action, and the title shows how many there are. Only one of the two answers (a field shortcut first on the map; otherwise the one higher in the list), so remove or change one of them.
 
 ## Mouse and special inputs
 

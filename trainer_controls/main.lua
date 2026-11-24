@@ -13,9 +13,14 @@
 -- The mod reads keyboard, gamepad, mouse and wheel through the input.* hooks,
 -- ahead of the game, and answers every input it knows itself; the game's own
 -- key and button tables are bypassed (its default keys with no action here do
--- nothing, so removing a control really removes it). Field shortcuts live in a
--- context of their own: an input may be a shortcut on the map and something
--- else everywhere else (R1 for Cut while walking, R in the Bag).
+-- nothing, so removing a control really removes it).
+--
+-- Every action has the places where it can happen: field shortcuts only on
+-- the map, L and R only in menus and battles, the rest everywhere. One input
+-- may serve two actions that never meet (R1 for Cut while walking, R in the
+-- Bag). Two actions that can happen in the same place on one input are a
+-- conflict: it is allowed, shown on the screen, and only one of them answers
+-- (a field shortcut before anything else on the map, else the first in the list).
 --
 -- Bindings are kept in the mod cache (bindings/v1). The controls screen opens
 -- over the game (F8 by default) and the same list is a Trainer Desk panel.
@@ -103,21 +108,59 @@ return function(mod)
   -- Bindings
   ---------------------------------------------------------------------------
   local SLOTS = 4
-  local bindings = {}                     -- action id -> { [slot] = token }
-  local index = { field = {}, general = {} } -- context -> token -> action id
-  local function contextOf(id)
+  local bindings = {}                  -- action id -> { [slot] = token }
+  local index = { map = {}, menus = {} } -- place -> token -> the action that answers there
+  local users = {}                     -- token -> list of action ids, in list order
+  local function isField(id)
     local def = actions[id]
-    return def and (def.kind == "field" or def.context == "field") and "field" or "general"
+    return def ~= nil and (def.kind == "field" or def.context == "field")
   end
+  -- Where an action can happen.
+  local function onMap(id) return isField(id) or not (id == "l" or id == "r") end
+  local function inMenus(id) return not isField(id) end
+  local function clash(a, b) return (onMap(a) and onMap(b)) or (inMenus(a) and inMenus(b)) end
   local function reindex()
-    index = { field = {}, general = {} }
-    for id, slots in pairs(bindings) do
-      if actions[id] then
-        for slot = 1, SLOTS do
-          if slots[slot] then index[contextOf(id)][slots[slot]] = id end
+    index, users = { map = {}, menus = {} }, {}
+    for _, id in ipairs(order) do
+      local slots = bindings[id]
+      for slot = 1, SLOTS do
+        local token = slots and slots[slot]
+        if token then
+          users[token] = users[token] or {}
+          users[token][#users[token] + 1] = id
+          if not isField(id) then
+            index.menus[token] = index.menus[token] or id
+            index.map[token] = index.map[token] or id
+          end
         end
       end
     end
+    -- on the map a field shortcut answers before anything else
+    for token, list in pairs(users) do
+      for _, id in ipairs(list) do
+        if isField(id) then index.map[token] = id break end
+      end
+    end
+  end
+  -- The actions that share this action's input in a slot and can happen in the same place.
+  local function conflicts(id, slot)
+    local token = bindings[id] and bindings[id][slot]
+    local out = {}
+    for _, other in ipairs(token and users[token] or {}) do
+      if other ~= id and clash(id, other) then out[#out + 1] = other end
+    end
+    return out
+  end
+  local function conflictCount()
+    local n = 0
+    for token, list in pairs(users) do
+      for i = 1, #list do
+        for j = i + 1, #list do
+          if clash(list[i], list[j]) then n = n + 1 end
+        end
+      end
+    end
+    return n
   end
   local function save()
     local lines = {}
@@ -157,24 +200,16 @@ return function(mod)
     if bindings[id] then bindings[id][slot] = nil end
     reindex(); save()
   end
-  -- Puts an input in an action's slot. The same input cannot do two things in
-  -- one context: it is taken from the action that had it (returned).
+  -- Puts an input in an action's slot. Nothing is taken from other actions:
+  -- what now clashes with it is returned, for the screen to say.
   local function assign(id, slot, token)
-    local context, taken = contextOf(id), nil
-    for other, slots in pairs(bindings) do
-      if contextOf(other) == context then
-        for s = 1, SLOTS do
-          if slots[s] == token and not (other == id and s == slot) then
-            slots[s] = nil
-            if other ~= id then taken = other end
-          end
-        end
-      end
-    end
     bindings[id] = bindings[id] or {}
+    for s = 1, SLOTS do
+      if s ~= slot and bindings[id][s] == token then bindings[id][s] = nil end
+    end
     bindings[id][slot] = token
     reindex(); save()
-    return taken
+    return conflicts(id, slot)
   end
 
   ---------------------------------------------------------------------------
@@ -183,8 +218,7 @@ return function(mod)
   local active = {} -- token -> { btn, source } while it is held
   local function inputDown(token)
     if active[token] then return true end
-    local id = index.field[token]
-    if not (id and Field.inOverworld()) then id = index.general[token] end
+    local id = Field.inOverworld() and index.map[token] or index.menus[token]
     local def = id and actions[id]
     if not def then return false end
     if def.kind == "hold" then
@@ -212,7 +246,7 @@ return function(mod)
   local function releaseAll()
     for token in pairs(active) do inputUp(token) end
   end
-  local function known(token) return index.field[token] ~= nil or index.general[token] ~= nil end
+  local function known(token) return users[token] ~= nil end
 
   ---------------------------------------------------------------------------
   -- Names of inputs
@@ -273,14 +307,14 @@ return function(mod)
           local def = actions[id]
           if def and (def.group or "mods") == group then
             if last ~= group then rows[#rows + 1] = { header = group }; last = group end
-            rows[#rows + 1] = { id = id, field = contextOf(id) == "field" }
+            rows[#rows + 1] = { id = id, field = isField(id) }
           end
         end
       end
       return rows
     end,
     binding = function(id, slot) return bindings[id] and bindings[id][slot] or nil end,
-    assign = assign, clear = clear, deviceOf = deviceOf,
+    assign = assign, clear = clear, deviceOf = deviceOf, conflicts = conflicts, conflictCount = conflictCount,
     reset = function() defaults(); save() end,
     releaseAll = releaseAll,
   })
@@ -298,7 +332,7 @@ return function(mod)
       local kind, name = token:match("^(%a+):(.+)$")
       local nav = (kind == "key" and NAV_KEYS[name]) or (kind == "pad" and NAV_PAD[name])
       -- the menu's own input closes it again, whatever it is
-      if not nav and index.general[token] == "controls_menu" then nav = "close" end
+      if not nav and index.menus[token] == "controls_menu" then nav = "close" end
       if nav then UI.nav(nav) end
       return true
     end
@@ -533,5 +567,5 @@ return function(mod)
     isOpen = function() return UI.isOpen() end,
   }
   mod.exports.debug = { ui = UI, bindings = function() return bindings end, label = label, assign = assign, clear = clear,
-    reload = loadBindings, active = function() return active end }
+    reload = loadBindings, active = function() return active end, conflicts = conflicts, conflictCount = conflictCount }
 end

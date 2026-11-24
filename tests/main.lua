@@ -78,12 +78,18 @@ function love.load()
   check(key("z") and held.a == nil, "while the game's own CONTROLS menu listens, events are left alone")
   input.captureArmed = false
 
-  -- rebinding: moving an input takes it from the action that had it
-  check(D.assign("b", 1, "key:z") == "a", "Z given to B is taken from A")
+  -- rebinding: nothing is taken away; what clashes is reported
+  check(D.assign("b", 1, "key:z")[1] == "a" and D.conflictCount() == 1, "Z given to B clashes with A, and is counted")
+  check(D.conflicts("a", 1)[1] == "b", "seen from both sides")
+  key("z"); check(held.a ~= nil and held.b == nil, "of two that clash, the first in the list answers"); key("z", "released")
+  D.clear("a", 1); check(D.conflictCount() == 0, "removing one ends the conflict")
   key("z"); check(held.b ~= nil and held.a == nil, "Z now holds B"); key("z", "released")
   check(cache["bindings/v1"]:find("\nb 1 key:z\n", 1, true) and not cache["bindings/v1"]:find("\na 1 ", 1, true), "saved")
   -- field shortcuts: their own context
-  check(D.assign("bike", 3, "pad:rightshoulder") == nil, "R1 for the Bicycle does not take it from R")
+  check(#D.assign("bike", 3, "pad:rightshoulder") == 0 and D.bindings().r[3] == "pad:rightshoulder", "R1 for the Bicycle and for R is no conflict: they never meet")
+  check(D.assign("surf", 3, "pad:triggerright")[1] == "speed_up", "R2 for Surf and for Speed up is one: both can happen on the map")
+  check(D.assign("cut", 3, "pad:triggerright")[1] ~= nil and D.conflictCount() == 3, "two field shortcuts on one button clash too")
+  D.clear("surf", 3); D.clear("cut", 3)
   overworld = true; pad("rightshoulder"); pad("rightshoulder", "released")
   check(#used == 1 and used[1] == 360 and held.r == nil, "on the map R1 rides the Bicycle")
   overworld = false; pad("rightshoulder")
@@ -150,6 +156,15 @@ function love.load()
   panel.draw(0, 480, 432); panel.pointer("down", sx + 10, 42 + 20 + 8); panel.draw(0, 480, 432)
   check(mouse(3) == false and D.bindings().up[1] == "mouse:3", "a click on the game while waiting binds that mouse button")
   mouse(3, "released")
+  -- removing without pressing anything
+  panel.draw(0, 480, 432); panel.pointer("down", sx + 10, 42 + 20 + 8); panel.draw(0, 480, 432)
+  panel.pointer("down", 240, 414)
+  check(not UI.capturing() and D.bindings().up[1] == nil, "Remove, while a cell waits, empties it")
+  D.assign("up", 1, "mouse:3")
+  -- a conflict on screen
+  D.assign("surf", 3, "pad:triggerright"); panel.draw(0, 480, 432)
+  shot("panel-conflict", 480, 432, false)
+  D.clear("surf", 3)
   -- with no input left for the screen, F8 still opens it
   D.clear("controls_menu", 1)
   key("f8"); check(UI.isOpen(), "F8 opens the screen even when unbound"); key("f8", "released"); UI.close()

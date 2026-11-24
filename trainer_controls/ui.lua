@@ -15,7 +15,7 @@ return function(env)
 
   local function hex(v) return { tonumber(v:sub(1, 2), 16) / 255, tonumber(v:sub(3, 4), 16) / 255, tonumber(v:sub(5, 6), 16) / 255 } end
   local C = { bg = hex("0f1216"), card = hex("1b1f26"), line = hex("2f3742"), text = hex("e6ebf2"), muted = hex("9aa5b4"),
-    accent = hex("4f9cf7"), warn = hex("d1912a"), off = hex("252b34") }
+    accent = hex("4f9cf7"), warn = hex("d1912a"), bad = hex("e0625a"), off = hex("252b34") }
   function UI.theme(colors)
     if type(colors) ~= "table" then return end
     C.bg, C.card, C.off = colors.panel or C.bg, colors.dock or C.card, colors.tabActive or C.off
@@ -74,10 +74,10 @@ return function(env)
     local cap = state.capture
     if not cap then return end
     if env.deviceOf(token) ~= cap.device then return end
-    local taken = env.assign(cap.id, cap.slot, token)
+    local clashes = env.assign(cap.id, cap.slot, token)
     state.capture = nil
-    if taken then state.message = F("TAKEN", env.label(token), env.actionLabel(taken))
-    else state.message = F("BOUND", env.label(token), env.actionLabel(cap.id)) end
+    if clashes[1] then state.message, state.messageBad = F("CONFLICT", env.label(token), env.actionLabel(clashes[1])), true
+    else state.message, state.messageBad = F("BOUND", env.label(token), env.actionLabel(cap.id)), false end
   end
   function UI.tick()
     if state.capture and now() > state.capture.deadline then
@@ -88,6 +88,7 @@ return function(env)
     local row = selected()
     if not row then return end
     env.clear(row.id, state.col)
+    state.capture, state.messageBad = nil, false
     state.message = F("CLEARED", env.actionLabel(row.id))
   end
   local function resetAll()
@@ -233,8 +234,14 @@ return function(env)
             G.rectangle("line", floor(x * s) + 0.5, floor((y + 1) * s) + 0.5, floor(slotW * s), floor((rowH - 2) * s), 4 * s, 4 * s)
           end
           local token = env.binding(row.id, col)
-          middle(waiting and "..." or (token and env.label(token) or "-"), x, y + 1, slotW, rowH - 2,
-            (token or waiting) and C.text or C.line, 10)
+          local clashing = token and not waiting and env.conflicts(row.id, col)[1] ~= nil
+          if clashing then
+            -- the same input also does something else here
+            color(C.bad); G.setLineWidth(max(1, s))
+            G.rectangle("line", floor(x * s) + 0.5, floor((y + 1) * s) + 0.5, floor(slotW * s), floor((rowH - 2) * s), 4 * s, 4 * s)
+          end
+          middle(waiting and "..." or (token and ((clashing and "! " or "") .. env.label(token)) or "-"), x, y + 1, slotW, rowH - 2,
+            clashing and C.bad or ((token or waiting) and C.text or C.line), 10)
           hit(x, y + 1, slotW, rowH - 2, function()
             state.row, state.col, state.message = at, col, nil
             startCapture()
@@ -252,19 +259,26 @@ return function(env)
     -- message and buttons
     local my, by = H - 48, H - 28
     local row = selected()
+    local total = env.conflictCount()
+    if total > 0 then text(F("CONFLICTS", total), 100, 9, C.bad, 9, 120) end
     if cap then
       local left = max(0, math.ceil(cap.deadline - now()))
       text(F(cap.device == "kb" and "WAIT_KEYBOARD" or "WAIT_GAMEPAD", env.actionLabel(cap.id), left), 10, my, C.warn, 11, W - 20)
-      local bw = (W - 20 - gap) / 2
-      if cap.device == "kb" then
-        button(T("LEFT_CLICK"), 10, by, bw, 22, function() UI.captured("mouse:1") end, C.off, true)
-        button(T("CANCEL"), 10 + bw + gap, by, bw, 22, function() state.capture, state.message = nil, nil end, C.off, true)
-      else
-        button(T("CANCEL"), 10, by, W - 20, 22, function() state.capture, state.message = nil, nil end, C.off, true)
+      -- remove what is there, or leave it as it is, without pressing anything
+      local list = { { T("REMOVE"), clearSelected }, { T("CANCEL"), function() state.capture, state.message = nil, nil end } }
+      if cap.device == "kb" then table.insert(list, 1, { T("LEFT_CLICK"), function() UI.captured("mouse:1") end }) end
+      local bw = (W - 20 - gap * (#list - 1)) / #list
+      for i, def in ipairs(list) do
+        button(def[1], 10 + (i - 1) * (bw + gap), by, bw, 22, def[2], C.off, true)
       end
     else
-      local note = state.message or (row and row.field and T("FIELD_HINT")) or T(overlay and "HINT_SCREEN" or "HINT_CELL")
-      text(note, 10, my, state.message and C.accent or C.muted, 10, W - 20)
+      -- the chosen cell's conflict comes before any other note
+      local clashes = row and env.conflicts(row.id, state.col) or {}
+      local token = row and env.binding(row.id, state.col)
+      local bad = clashes[1] ~= nil and not (state.message and not state.messageBad)
+      local note = (bad and F("CONFLICT", env.label(token), env.actionLabel(clashes[1])))
+        or state.message or (row and row.field and T("FIELD_HINT")) or T(overlay and "HINT_SCREEN" or "HINT_CELL")
+      text(note, 10, my, bad and C.bad or (state.message and C.accent or C.muted), 10, W - 20)
       local labels = { { T("CHANGE"), startCapture }, { T("CLEAR"), clearSelected },
         { T(state.resetArmed and "RESET_AGAIN" or "RESET"), resetAll, state.resetArmed and C.warn or nil } }
       if overlay then labels[#labels + 1] = { T("CLOSE"), UI.close } end
