@@ -1,0 +1,27 @@
+{
+  "id": "trainer_controls",
+  "name": "Trainer Controls",
+  "version": "0.1.0",
+  "api": 3,
+  "entry": "main.lua",
+  "category": "GAMEPLAY",
+  "profile": "content",
+  "games": [
+    "firered",
+    "leafgreen"
+  ],
+  "game_version": "0.0.0-dev || >=0.3.93 <2.0.0",
+  "affects_link": false,
+  "dependencies": [],
+  "optional_dependencies": [
+    "trainer_desk"
+  ],
+  "conflicts": [
+    "pad_shortcuts"
+  ],
+  "permissions": [
+    "engine_internals"
+  ],
+  "description": "Map every control the way you want to play: the game's buttons (D-pad, A, B, START, SELECT, L, R), its functions (speed, quick save and load, zoom) and field shortcuts that skip the menus (Cut, Surf, Fly, Strength, Flash, Rock Smash, Waterfall, Dig, Teleport, Sweet Scent, Bicycle, Itemfinder, VS Seeker). Keyboard, mouse and gamepad, with PlayStation, Xbox and Nintendo button names. Press F8 for the controls screen, or use its Trainer Desk panel. English, Spanish, Portuguese and Japanese.",
+  "github": "MarcoAFSchaefer/trainer-controls"
+}
