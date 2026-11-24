@@ -53,4 +53,5 @@ return {
   TIMED_OUT = "Nothing pressed: no change.",
   RESET_CONFIRM = "Press Defaults again to put every control back to the defaults.",
   RESET_DONE = "Every control is back to the defaults.",
+  OLD_MOD = 'Turn off the "Atalhos do Controle" (pad_shortcuts) mod: it still answers the gamepad, whatever is set here.',
 }

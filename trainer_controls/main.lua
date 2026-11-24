@@ -331,6 +331,8 @@ return function(mod)
     binding = function(id, slot) return bindings[id] and bindings[id][slot] or nil end,
     assign = assign, clear = clear, deviceOf = deviceOf, conflicts = conflicts, conflictCount = conflictCount,
     reset = function() defaults(); save() end,
+    -- the mod this one replaces answers the gamepad too, whatever is set here
+    rival = function() return mod.find ~= nil and mod.find("pad_shortcuts") ~= nil end,
     releaseAll = releaseAll,
   })
 

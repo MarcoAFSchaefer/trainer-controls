@@ -53,4 +53,5 @@ return {
   TIMED_OUT = "Nada foi apertado: sem mudança.",
   RESET_CONFIRM = "Aperte Padrões de novo para voltar todos os controles ao padrão.",
   RESET_DONE = "Todos os controles voltaram ao padrão.",
+  OLD_MOD = 'Desative o mod "Atalhos do Controle" (pad_shortcuts): ele continua respondendo ao controle, não importa o que esteja aqui.',
 }

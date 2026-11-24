@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- The controls screen warns when the old `pad_shortcuts` mod is still on: it keeps answering the gamepad, so shortcuts removed here would still fire.
+
 ## 0.2.1
 
 - Shortcuts for what is in front of you (Cut, Rock Smash, Surf, Waterfall, Strength) may share one input without conflict: the one that fits what you are facing is used. Any other two field shortcuts on one input are still a conflict, and are tried in list order.

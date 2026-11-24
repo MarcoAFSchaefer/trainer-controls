@@ -276,7 +276,9 @@ return function(env)
       local clashes = row and env.conflicts(row.id, state.col) or {}
       local token = row and env.binding(row.id, state.col)
       local bad = clashes[1] ~= nil and not (state.message and not state.messageBad)
-      local note = (bad and F("CONFLICT", env.label(token), env.actionLabel(clashes[1])))
+      local rival = env.rival()
+      if rival then bad = true end
+      local note = (rival and T("OLD_MOD")) or (bad and F("CONFLICT", env.label(token), env.actionLabel(clashes[1])))
         or state.message or (row and row.field and T("FIELD_HINT")) or T(overlay and "HINT_SCREEN" or "HINT_CELL")
       text(note, 10, my, bad and C.bad or (state.message and C.accent or C.muted), 10, W - 20)
       local labels = { { T("CHANGE"), startCapture }, { T("CLEAR"), clearSelected },

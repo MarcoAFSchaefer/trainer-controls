@@ -53,4 +53,5 @@ return {
   TIMED_OUT = "なにもおされませんでした。へんこうなし。",
   RESET_CONFIRM = "もういちど「しょきか」をおすと、すべてのそうさがもとにもどります。",
   RESET_DONE = "すべてのそうさをもとにもどしました。",
+  OLD_MOD = '「Atalhos do Controle」(pad_shortcuts) MODをオフにしてください。ここのせっていに かんけいなく コントローラーに はんのうします。',
 }

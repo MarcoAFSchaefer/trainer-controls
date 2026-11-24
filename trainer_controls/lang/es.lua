@@ -53,4 +53,5 @@ return {
   TIMED_OUT = "No se pulsó nada: sin cambios.",
   RESET_CONFIRM = "Pulsa Por defecto otra vez para restablecer todos los controles.",
   RESET_DONE = "Todos los controles volvieron a los valores por defecto.",
+  OLD_MOD = 'Desactiva el mod "Atalhos do Controle" (pad_shortcuts): sigue respondiendo al mando, sin importar lo que pongas aquí.',
 }
