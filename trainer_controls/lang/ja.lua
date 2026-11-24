@@ -1,7 +1,7 @@
 -- 日本語。
 return {
   TITLE = "そうさせってい",
-  HINT_SCREEN = "やじるし:いどう ・ A/Enter:へんこう ・ Y/Del:けす ・ X/R:しょきか ・ B/Esc:とじる",
+  HINT_SCREEN = "やじるし:いどう ・ A/Enter:マスをひらく (へんこう/はずす) ・ Y/Del:はずす ・ X/R:しょきか ・ B/Esc:とじる",
   HINT_PANEL = "マスをクリックして、キーかボタンをおしてください",
   HINT_CELL = "1つのそうさに、キーやマウスを2つ、コントローラーのボタンを2つまで。",
   FIELD_HINT = "フィールドのショートカット: あるいているときだけ。LやR(メニューだけ)とは おなじボタンにできます。",
@@ -54,4 +54,5 @@ return {
   RESET_CONFIRM = "もういちど「しょきか」をおすと、すべてのそうさがもとにもどります。",
   RESET_DONE = "すべてのそうさをもとにもどしました。",
   OLD_MOD = '「Atalhos do Controle」(pad_shortcuts) MODをオフにしてください。ここのせっていに かんけいなく コントローラーに はんのうします。',
+  MENU_HINT = "%s (%s): ひだり/みぎでえらぶ ・ A/Enterでけってい ・ B/Escでもどる",
 }

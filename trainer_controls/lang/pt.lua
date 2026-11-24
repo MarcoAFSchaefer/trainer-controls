@@ -1,7 +1,7 @@
 -- Português (Brasil).
 return {
   TITLE = "Controles",
-  HINT_SCREEN = "Setas movem · A/Enter troca · Y/Del limpa · X/R padrões · B/Esc fecha",
+  HINT_SCREEN = "Setas movem · A/Enter abre a célula (trocar ou remover) · Y/Del remove · X/R padrões · B/Esc fecha",
   HINT_PANEL = "Clique numa célula e aperte a tecla ou o botão",
   HINT_CELL = "Cada ação aceita duas teclas ou botões do mouse e dois botões do controle.",
   FIELD_HINT = "Atalho de campo: vale enquanto anda. O mesmo botão pode ser L ou R, que só agem nos menus.",
@@ -54,4 +54,5 @@ return {
   RESET_CONFIRM = "Aperte Padrões de novo para voltar todos os controles ao padrão.",
   RESET_DONE = "Todos os controles voltaram ao padrão.",
   OLD_MOD = 'Desative o mod "Atalhos do Controle" (pad_shortcuts): ele continua respondendo ao controle, não importa o que esteja aqui.',
+  MENU_HINT = "%s (%s): esquerda/direita escolhe, A/Enter confirma, B/Esc volta",
 }

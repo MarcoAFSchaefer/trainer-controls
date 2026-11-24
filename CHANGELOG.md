@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+- Removing with the keyboard or the gamepad works: choosing a cell (A / Enter) now asks **Change / Remove / Cancel** instead of waiting for an input at once. Before, the wait took the very key meant to remove (Y or Del) as the new binding, so a cell could only be replaced. A mouse click still goes straight to waiting, with Remove and Cancel under the list.
+
 ## 0.2.2
 
 - The controls screen warns when the old `pad_shortcuts` mod is still on: it keeps answering the gamepad, so shortcuts removed here would still fire.

@@ -4,7 +4,7 @@
 
 1. Copy `trainer_controls` into `%APPDATA%\pokemon-love2d\mods` and turn it on. If you used `pad_shortcuts`, turn that one off.
 2. In the game, press **F8**. The controls screen opens over the game.
-3. Move to a cell, press A / Enter (or click it), then press the key or button you want there.
+3. Move to a cell and press A / Enter: choose **Change** and press the key or button you want there, or **Remove** to empty it. With the mouse, click the cell and press the new input, or click Remove.
 
 Out of the box the controls are the game's usual ones: arrows or WASD, Z / Enter for A, X / Backspace for B, Esc for START, Tab for SELECT, Q and E for L and R; on a gamepad the D-pad or left stick, the face buttons, the shoulders for L and R and the triggers for speed. Field shortcuts start empty.
 

@@ -20,7 +20,7 @@ Control mapping for Pokémon FireRed/LeafGreen on Gen1Recomp (mod API 3): every 
 | | Keyboard | Gamepad | Mouse |
 | --- | --- | --- | --- |
 | Move | arrows | D-pad / left stick | wheel scrolls |
-| Change the cell | Enter, Z, Space | A (bottom button) | click the cell |
+| Open the cell (Change / Remove / Cancel) | Enter, Z, Space | A (bottom button) | click the cell (goes straight to Change) |
 | Clear the cell | Del | Y (top button) | Clear |
 | Defaults (asks twice) | R | X (left button) | Defaults |
 | Close | Esc, Backspace, X, F8 | B, START | Close |

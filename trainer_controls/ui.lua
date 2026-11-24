@@ -4,8 +4,10 @@
 -- cell waits for the next input and puts it there.
 --
 -- While it waits, every key and button is an answer, so nothing on the
--- keyboard or gamepad can cancel: the wait ends by itself after a few seconds,
--- or with the Cancel button.
+-- keyboard or gamepad can cancel or remove: the wait ends by itself after a
+-- few seconds, or with the buttons under the list. That is why choosing a cell
+-- with the keyboard or the gamepad first asks what to do with it (change,
+-- remove, cancel); a mouse click goes straight to waiting, with the buttons at hand.
 return function(env)
   local G = love.graphics
   local T, F = env.T, env.F
@@ -52,7 +54,7 @@ return function(env)
   function UI.isOpen() return state.open end
   function UI.capturing() return state.capture ~= nil end
   function UI.close()
-    state.open, state.capture, state.resetArmed = false, nil, false
+    state.open, state.capture, state.resetArmed, state.menu = false, nil, false, nil
   end
   function UI.toggle()
     if state.open then return UI.close() end
@@ -100,10 +102,26 @@ return function(env)
     state.resetArmed, state.message = false, T("RESET_DONE")
   end
 
+  local MENU = { "change", "remove", "cancel" }
+  local function menuDo(choice)
+    state.menu = nil
+    if choice == "change" then startCapture()
+    elseif choice == "remove" then clearSelected() end
+  end
   function UI.nav(what)
     if state.capture then return end
     local list = rows()
     selected()
+    if state.menu then
+      -- the small menu of the chosen cell
+      if what == "left" then state.menu = max(1, state.menu - 1)
+      elseif what == "right" then state.menu = min(#MENU, state.menu + 1)
+      elseif what == "select" then menuDo(MENU[state.menu])
+      elseif what == "clear" then menuDo("remove")
+      elseif what == "back" then state.menu = nil
+      elseif what == "close" then state.menu = nil; UI.close() end
+      return
+    end
     if what ~= "back" and what ~= "reset" then state.resetArmed = false end
     if what == "up" or what == "down" then
       local step, at = what == "up" and -1 or 1, state.row or 0
@@ -113,7 +131,7 @@ return function(env)
       keepInView()
     elseif what == "left" then state.col = max(1, state.col - 1)
     elseif what == "right" then state.col = min(4, state.col + 1)
-    elseif what == "select" then startCapture()
+    elseif what == "select" then state.menu, state.message = 1, nil
     elseif what == "clear" then clearSelected()
     elseif what == "reset" then resetAll()
     elseif what == "back" then
@@ -243,7 +261,7 @@ return function(env)
           middle(waiting and "..." or (token and ((clashing and "! " or "") .. env.label(token)) or "-"), x, y + 1, slotW, rowH - 2,
             clashing and C.bad or ((token or waiting) and C.text or C.line), 10)
           hit(x, y + 1, slotW, rowH - 2, function()
-            state.row, state.col, state.message = at, col, nil
+            state.row, state.col, state.message, state.menu = at, col, nil, nil
             startCapture()
           end, true)
         end
@@ -270,6 +288,14 @@ return function(env)
       local bw = (W - 20 - gap * (#list - 1)) / #list
       for i, def in ipairs(list) do
         button(def[1], 10 + (i - 1) * (bw + gap), by, bw, 22, def[2], C.off, true)
+      end
+    elseif state.menu and row then
+      local token = env.binding(row.id, state.col)
+      text(F("MENU_HINT", env.actionLabel(row.id), token and env.label(token) or "-"), 10, my, C.accent, 10, W - 20)
+      local labels = { T("CHANGE"), T("REMOVE"), T("CANCEL") }
+      local bw = (W - 20 - gap * 2) / 3
+      for i, label in ipairs(labels) do
+        button(label, 10 + (i - 1) * (bw + gap), by, bw, 22, function() menuDo(MENU[i]) end, i == state.menu and C.accent or C.off)
       end
     else
       -- the chosen cell's conflict comes before any other note

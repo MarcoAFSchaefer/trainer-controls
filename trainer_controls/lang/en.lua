@@ -1,7 +1,7 @@
 -- English: the reference language. tools/check_lang.py compares the others.
 return {
   TITLE = "Controls",
-  HINT_SCREEN = "Arrows move · A/Enter change · Y/Del clear · X/R defaults · B/Esc close",
+  HINT_SCREEN = "Arrows move · A/Enter opens the cell (change or remove) · Y/Del removes · X/R defaults · B/Esc close",
   HINT_PANEL = "Click a cell, then press the key or button",
   HINT_CELL = "Each action takes two keys or mouse buttons and two gamepad buttons.",
   FIELD_HINT = "Field shortcut: works while walking. The same input may be L or R, which only act in menus.",
@@ -54,4 +54,5 @@ return {
   RESET_CONFIRM = "Press Defaults again to put every control back to the defaults.",
   RESET_DONE = "Every control is back to the defaults.",
   OLD_MOD = 'Turn off the "Atalhos do Controle" (pad_shortcuts) mod: it still answers the gamepad, whatever is set here.',
+  MENU_HINT = "%s (%s): left/right to choose, A/Enter to confirm, B/Esc to go back",
 }

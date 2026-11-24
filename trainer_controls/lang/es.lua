@@ -1,7 +1,7 @@
 -- Español.
 return {
   TITLE = "Controles",
-  HINT_SCREEN = "Flechas mueven · A/Intro cambia · Y/Supr borra · X/R por defecto · B/Esc cierra",
+  HINT_SCREEN = "Flechas mueven · A/Intro abre la celda (cambiar o quitar) · Y/Supr quita · X/R por defecto · B/Esc cierra",
   HINT_PANEL = "Haz clic en una celda y pulsa la tecla o el botón",
   HINT_CELL = "Cada acción admite dos teclas o botones del ratón y dos botones del mando.",
   FIELD_HINT = "Atajo de campo: vale mientras caminas. El mismo botón puede ser L o R, que solo actúan en los menús.",
@@ -54,4 +54,5 @@ return {
   RESET_CONFIRM = "Pulsa Por defecto otra vez para restablecer todos los controles.",
   RESET_DONE = "Todos los controles volvieron a los valores por defecto.",
   OLD_MOD = 'Desactiva el mod "Atalhos do Controle" (pad_shortcuts): sigue respondiendo al mando, sin importar lo que pongas aquí.',
+  MENU_HINT = "%s (%s): izquierda/derecha elige, A/Intro confirma, B/Esc vuelve",
 }

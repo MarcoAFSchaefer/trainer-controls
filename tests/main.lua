@@ -124,14 +124,20 @@ function love.load()
   -- the screen
   key("f8"); key("f8", "released"); check(UI.isOpen(), "F8 opens the controls screen")
   key("z"); check(held.b == nil, "while it is open the game gets nothing"); key("z", "released")
-  check(UI.capturing(), "Z (select) on a cell waits for an input")
+  check(not UI.capturing() and UI.state.menu == 1, "Z (select) on a cell asks what to do with it")
+  key("z"); key("z", "released"); check(UI.capturing(), "Change waits for an input")
   key("k"); key("k", "released")
   check(not UI.capturing() and D.bindings().up[1] == "key:k", "the next key goes in the cell: Up is K")
-  key("right"); key("right"); key("return")
+  -- removing with the keyboard: open the cell, go to Remove, confirm
+  key("return"); key("right"); key("return")
+  check(not UI.capturing() and D.bindings().up[1] == nil, "Enter, right, Enter removes what is in the cell")
+  key("return"); key("escape"); check(UI.isOpen() and UI.state.menu == nil, "Esc leaves the cell's menu, not the screen")
+  key("return"); key("return"); key("k"); key("k", "released")
+  key("right"); key("right"); key("return"); key("return")
   key("j"); check(UI.capturing(), "a key is no answer for a gamepad cell")
   pad("x"); check(not UI.capturing() and D.bindings().up[3] == "pad:x", "a gamepad button is")
   pad("x", "released")
-  pad("a"); pad("a", "released"); check(UI.capturing(), "gamepad A selects too")
+  pad("a"); pad("a", "released"); pad("a"); pad("a", "released"); check(UI.capturing(), "gamepad A opens the cell and A again changes it")
   clock = clock + 7; step(); check(not UI.capturing() and D.bindings().up[3] == "pad:x", "nothing pressed: the wait ends with no change")
   pad("y"); check(D.bindings().up[3] == nil, "Y clears the cell"); pad("y", "released")
   local lang = os.getenv("TEST_LANG") or "en"
@@ -149,6 +155,7 @@ function love.load()
   for _ = 1, 12 do key("down"); key("down", "released") end
   mod.options_.pad_labels = "playstation"
   shot("screen-scrolled", 720, 480, true)
+  key("return"); shot("screen-menu", 720, 480, true)
   key("return"); shot("screen-waiting", 720, 480, true); clock = clock + 7; step()
   -- reset asks twice
   key("r"); key("r", "released"); check(D.bindings().up[1] == "key:k", "Defaults asks first")
