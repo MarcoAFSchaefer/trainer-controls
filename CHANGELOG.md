@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Shortcuts for what is in front of you (Cut, Rock Smash, Surf, Waterfall, Strength) may share one input without conflict: the one that fits what you are facing is used. Any other two field shortcuts on one input are still a conflict, and are tried in list order.
+
 ## 0.2.0
 
 - **Remove** button while a cell waits for an input: empties the cell without pressing anything (Clear, Y and Del still work on the chosen cell).

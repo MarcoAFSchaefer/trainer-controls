@@ -11,7 +11,7 @@ function love.load()
   os.execute("mkdir -p " .. OUT)
   local clock = 0
   love.timer.getTime = function() return clock end
-  local overworld, used = true, {}
+  local overworld, used, facing = true, {}, nil
   package.preload["src.core.game3.field"] = function() return { running = true, _session = { bag = { [360] = 1 }, party = {} } } end
   package.preload["src.ui.game3.hud"] = function() return { busy = function() return not overworld end } end
   package.preload["src.core.game3.player"] = function() return { moving = false } end
@@ -88,8 +88,21 @@ function love.load()
   -- field shortcuts: their own context
   check(#D.assign("bike", 3, "pad:rightshoulder") == 0 and D.bindings().r[3] == "pad:rightshoulder", "R1 for the Bicycle and for R is no conflict: they never meet")
   check(D.assign("surf", 3, "pad:triggerright")[1] == "speed_up", "R2 for Surf and for Speed up is one: both can happen on the map")
-  check(D.assign("cut", 3, "pad:triggerright")[1] ~= nil and D.conflictCount() == 3, "two field shortcuts on one button clash too")
-  D.clear("surf", 3); D.clear("cut", 3)
+  check(D.assign("fly", 3, "pad:triggerright")[1] ~= nil and D.conflictCount() == 3, "two field shortcuts that can both apply clash too")
+  D.clear("surf", 3); D.clear("fly", 3)
+  -- Cut and Rock Smash act on what is in front: one button for both, the one that fits is used
+  check(#D.assign("cut", 3, "pad:x") == 0 and #D.assign("rock_smash", 3, "pad:x") == 0 and D.conflictCount() == 0, "Cut and Rock Smash on one button is no conflict")
+  local asked = {}
+  package.loaded["src.core.game3.field"].executeFieldMove = function(res) asked[#asked + 1] = "used " .. res.name end
+  package.loaded["src.core.game3.field_moves"] = { partyMoveUser = function() return {} end,
+    fromMenu = function(name) asked[#asked + 1] = name; return { ok = name == facing, name = name } end }
+  facing = "ROCK_SMASH"; pad("x"); pad("x", "released")
+  check(asked[#asked] == "used ROCK_SMASH", "facing a rock, the shared button smashes it: " .. table.concat(asked, ","))
+  asked = {}; facing = "CUT"; pad("x"); pad("x", "released")
+  check(asked[#asked] == "used CUT", "facing a tree, it cuts")
+  asked = {}; facing = nil; pad("x"); pad("x", "released")
+  check(#asked == 2, "facing nothing, nothing is used")
+  D.clear("cut", 3); D.clear("rock_smash", 3); package.loaded["src.core.game3.field_moves"] = nil
   overworld = true; pad("rightshoulder"); pad("rightshoulder", "released")
   check(#used == 1 and used[1] == 360 and held.r == nil, "on the map R1 rides the Bicycle")
   overworld = false; pad("rightshoulder")

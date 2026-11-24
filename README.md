@@ -29,7 +29,7 @@ After choosing a cell, press the key or button you want. Every key and button is
 
 ## Conflicts
 
-Each action has the places where it can happen: field shortcuts on the map only, L and R in menus and battles only, everything else everywhere. Two actions on one input are a conflict only when they share a place. Conflicts are allowed but marked in red and counted in the title; only one of the two answers.
+Each action has the places where it can happen: field shortcuts on the map only, L and R in menus and battles only, everything else everywhere. Two actions on one input are a conflict only when they share a place. Cut, Rock Smash, Surf, Waterfall and Strength act on what is in front of you and never apply together, so they may share one input (the one that fits is used). Conflicts are allowed but marked in red and counted in the title; only one of the two answers.
 
 ## Compatibility
 

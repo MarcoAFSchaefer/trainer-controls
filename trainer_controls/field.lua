@@ -165,18 +165,37 @@ return function(mod)
     if MOVE_OF[action] then ok, done = pcall(useMove, action, Field, P, session)
     else ok, done = pcall(useItem, action, Field, P, session) end
     if not ok and mod.log then mod.log:warn("shortcut %s failed: %s", action, tostring(done)) end
-    return "done"
+    return "done", ok and done == true
   end
 
+  -- Shortcuts that act on what is right in front of the player. No two of
+  -- them can apply at once, so they may share one input: the one that fits is used.
+  Field_.FACING = { cut = true, rock_smash = true, surf = true, waterfall = true, strength = true }
+  -- Several shortcuts on one input: each is tried until one can be used. Cut
+  -- goes last among them, since it also works on tall grass with nothing in front.
+  local function tryAll(list)
+    local last
+    for pass = 1, 2 do
+      for _, action in ipairs(list) do
+        if (action == "cut") == (pass == 2) then
+          local state, used = perform(action)
+          last = state
+          if state ~= "done" or used then return state end
+        end
+      end
+    end
+    return last or "done"
+  end
   -- A press in the middle of a step waits for the step to end.
   local pending
-  function Field_.request(action)
-    if perform(action) == "moving" then pending = { action = action, steps = 20 } else pending = nil end
+  function Field_.request(actions)
+    if type(actions) ~= "table" then actions = { actions } end
+    if tryAll(actions) == "moving" then pending = { actions = actions, steps = 20 } else pending = nil end
   end
   function Field_.step()
     if not pending then return end
     pending.steps = pending.steps - 1
-    local state = perform(pending.action)
+    local state = tryAll(pending.actions)
     if state ~= "moving" or pending.steps <= 0 then pending = nil end
   end
   return Field_

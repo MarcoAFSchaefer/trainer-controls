@@ -118,7 +118,11 @@ return function(mod)
   -- Where an action can happen.
   local function onMap(id) return isField(id) or not (id == "l" or id == "r") end
   local function inMenus(id) return not isField(id) end
-  local function clash(a, b) return (onMap(a) and onMap(b)) or (inMenus(a) and inMenus(b)) end
+  local function clash(a, b)
+    -- shortcuts for what is in front (a tree, a rock, water, a boulder) never apply together
+    if isField(a) and isField(b) then return not (Field.FACING[a] and Field.FACING[b]) end
+    return (onMap(a) and onMap(b)) or (inMenus(a) and inMenus(b))
+  end
   local function reindex()
     index, users = { map = {}, menus = {} }, {}
     for _, id in ipairs(order) do
@@ -135,10 +139,18 @@ return function(mod)
         end
       end
     end
-    -- on the map a field shortcut answers before anything else
+    -- on the map a field shortcut answers before anything else; the built-in
+    -- ones that share an input are tried one after the other
+    index.shortcuts = {}
     for token, list in pairs(users) do
       for _, id in ipairs(list) do
-        if isField(id) then index.map[token] = id break end
+        if isField(id) then
+          if index.map[token] == nil or not isField(index.map[token]) then index.map[token] = id end
+          if actions[id].kind == "field" and not actions[id].foreign then
+            index.shortcuts[token] = index.shortcuts[token] or {}
+            table.insert(index.shortcuts[token], id)
+          end
+        end
       end
     end
   end
@@ -228,6 +240,9 @@ return function(mod)
         try(input.sourcePress, input, def.btn, source)
         active[token] = { btn = def.btn, source = source }
       end
+    elseif def.kind == "field" and not def.foreign and index.shortcuts[token] then
+      active[token] = {}
+      Field.request(index.shortcuts[token])
     else
       active[token] = {}
       local ok, err = pcall(def.run, game)
