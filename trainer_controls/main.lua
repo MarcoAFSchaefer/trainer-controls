@@ -47,7 +47,7 @@ return function(mod)
   end
   local I18n = load_("i18n.lua", mod, function() return option("language") end)
   local T, F = I18n.T, I18n.F
-  local Field = load_("field.lua", mod)
+  local Field = load_("shortcuts.lua", mod)
   Field.confirmTeleport = function() return option("confirm_teleport") ~= false end
 
   local game

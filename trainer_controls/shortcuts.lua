@@ -1,4 +1,4 @@
--- field.lua: field shortcuts, the things otherwise reached through the
+-- shortcuts.lua: field shortcuts, the things otherwise reached through the
 -- Pokémon menu or the Bag. Each one goes down the game's own path, so it only
 -- works when the menu would offer it: the badge, a party Pokémon that knows
 -- the move, the item in the Bag, and a place where it applies.

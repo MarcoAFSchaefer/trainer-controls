@@ -29,7 +29,7 @@ After the first listing, new versions need no pull request: the index reads the 
 
 ## What the sandbox scan will report
 
-- `load`: used to load the mod's own files (`i18n.lua`, `field.lua`, `ui.lua`, `lang/*.lua`). Reported for review, not blocking.
+- `load`: used to load the mod's own files (`i18n.lua`, `shortcuts.lua`, `ui.lua`, `lang/*.lua`). Reported for review, not blocking.
 
 ## Before each release
 

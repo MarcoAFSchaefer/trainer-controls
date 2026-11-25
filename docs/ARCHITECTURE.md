@@ -3,7 +3,7 @@
 ```
 trainer_controls/
   main.lua    actions, bindings, the input hooks, the Desk panel, the API for other mods
-  field.lua   field shortcuts through the game's own menu paths
+  shortcuts.lua  field shortcuts through the game's own menu paths
   ui.lua      the list: screen over the game and Trainer Desk panel
   i18n.lua, lang/, fonts/
 ```

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+- The file with the field shortcuts is now `shortcuts.lua` (was `field.lua`), so the mod passes the modkit's `validate --strict`: a file named like one of the game's own data tables is checked as a possible copy of it. Nothing changes in play.
+
 ## 0.2.3
 
 - Removing with the keyboard or the gamepad works: choosing a cell (A / Enter) now asks **Change / Remove / Cancel** instead of waiting for an input at once. Before, the wait took the very key meant to remove (Y or Del) as the new binding, so a cell could only be replaced. A mouse click still goes straight to waiting, with Remove and Cancel under the list.
