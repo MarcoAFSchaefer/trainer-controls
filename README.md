@@ -2,6 +2,10 @@
 
 Control mapping for Pokémon FireRed/LeafGreen on Gen1Recomp (mod API 3): every button of the game, its functions and a set of field shortcuts, on keyboard, mouse and gamepad.
 
+![The Trainer Controls screen: game buttons on keyboard, mouse and gamepad](docs/images/screen.png)
+
+![Game functions on the same screen](docs/images/screen-functions.png)
+
 ## What it does
 
 - **Remaps everything.** Each action has two cells for keyboard and mouse and two for the gamepad. The game's own key table is bypassed: a control you remove is really gone.
@@ -76,6 +80,10 @@ end
 - One layout for every gamepad; two gamepads act as one.
 - No combinations (two buttons for one action).
 - Touch controls are not changed.
+
+## What it changes in the game
+
+[DIFFERENCES.md](DIFFERENCES.md) lists everything this mod does differently from the unmodded game.
 
 ## License
 
