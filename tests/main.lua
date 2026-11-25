@@ -188,6 +188,17 @@ function love.load()
   -- with no input left for the screen, F8 still opens it
   D.clear("controls_menu", 1)
   key("f8"); check(UI.isOpen(), "F8 opens the screen even when unbound"); key("f8", "released"); UI.close()
+  -- the game picture inside docks: clicks arrive in window coordinates, with
+  -- the place inside the picture in gameX/gameY
+  do
+    key("f8"); key("f8", "released")
+    local c = G.newCanvas(720, 480); G.setCanvas(c)
+    mod.hooks_["render.hud"](function() end, game, { gameX = 0, gameY = 0, gameWidth = 720, gameHeight = 480, scale = 3 })
+    G.setCanvas()
+    mod.hooks_["input.pointer"](nextHook, game, { phase = "pressed", source = "mouse", button = 1, x = 465 + 620, y = 20 + 453, gameX = 620, gameY = 453, insideGame = true })
+    check(not UI.isOpen(), "a click on Close closes the screen when the game picture is not at the window's corner")
+    UI.close()
+  end
   -- a fresh load reads what was saved
   local again = newMod()
   check(again.exports.debug.bindings().up[1] == "mouse:3", "bindings survive a restart")

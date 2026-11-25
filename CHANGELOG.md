@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.5
+
+- Mouse clicks on the controls screen land where you click when Trainer Desk is on. The screen took the game picture to start at the window's corner, so with docks around the game every click was read too far to the right and down: Close did nothing and a click on a cell could open another one.
+- A fast turn of the mouse wheel scrolls the list by as many rows as it turned, not by one.
+
 ## 0.2.4
 
 - The file with the field shortcuts is now `shortcuts.lua` (was `field.lua`), so the mod passes the modkit's `validate --strict`: a file named like one of the game's own data tables is checked as a possible copy of it. Nothing changes in play.

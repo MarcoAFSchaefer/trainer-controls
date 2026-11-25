@@ -475,7 +475,12 @@ return function(mod)
   mod.hooks:wrap("input.pointer", function(nextHook, g, ev, ...)
     if type(ev) ~= "table" or ev.source ~= "mouse" or standDown(g) then return nextHook(g, ev, ...) end
     if UI.isOpen() then
-      if ev.phase == "pressed" and hudRect then UI.click(ev.x - hudRect.x, ev.y - hudRect.y, tonumber(ev.button) or 1) end
+      if ev.phase == "pressed" and hudRect then
+        -- gameX/gameY: the click inside the game picture, which is not at the
+        -- window's corner when a layout mod (Trainer Desk) puts docks around it
+        local cx, cy = tonumber(ev.gameX) or ev.x, tonumber(ev.gameY) or ev.y
+        UI.click((cx - hudRect.x) / hudRect.k, (cy - hudRect.y) / hudRect.k, tonumber(ev.button) or 1)
+      end
       return true
     end
     local button = tonumber(ev.button)
@@ -493,7 +498,7 @@ return function(mod)
     if type(dy) ~= "number" or dy == 0 or standDown(g) then return nextHook(g, dy, ...) end
     local token = dy > 0 and "wheel:up" or "wheel:down"
     if UI.capturing() then UI.captured(token); return true end
-    if UI.isOpen() then UI.scroll(dy > 0 and -1 or 1); return true end
+    if UI.isOpen() then UI.scroll((dy > 0 and -1 or 1) * math.max(1, math.floor(math.abs(dy) + 0.5))); return true end
     if inputDown(token) then inputUp(token); return true end
     return nextHook(g, dy, ...)
   end, 1500)
@@ -505,9 +510,13 @@ return function(mod)
     local x, y = tonumber(viewport.gameX) or 0, tonumber(viewport.gameY) or 0
     local w = tonumber(viewport.gameWidth) or tonumber(viewport.width) or 480
     local h = tonumber(viewport.gameHeight) or tonumber(viewport.height) or 320
-    hudRect = { x = x, y = y }
     love.graphics.push("all")
     love.graphics.translate(x, y)
+    -- Where the screen is inside the game picture, under whatever transform
+    -- is in force; clicks are compared in the same space (see input.pointer).
+    local sx, sy = love.graphics.transformPoint(0, 0)
+    local ex = love.graphics.transformPoint(1, 0)
+    hudRect = { x = sx, y = sy, k = math.max(0.01, math.abs(ex - sx)) }
     local ok, err = pcall(UI.draw, w, h, true)
     love.graphics.pop()
     if not ok and mod.log then mod.log:warn("controls screen: %s", tostring(err)); UI.close() end

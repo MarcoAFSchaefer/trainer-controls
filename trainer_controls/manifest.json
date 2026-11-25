@@ -1,7 +1,7 @@
 {
   "id": "trainer_controls",
   "name": "Trainer Controls",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "api": 3,
   "entry": "main.lua",
   "category": "GAMEPLAY",
