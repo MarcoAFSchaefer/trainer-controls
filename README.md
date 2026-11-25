@@ -2,9 +2,9 @@
 
 Control mapping for Pokémon FireRed/LeafGreen on Gen1Recomp (mod API 3): every button of the game, its functions and a set of field shortcuts, on keyboard, mouse and gamepad.
 
-![The Trainer Controls screen: game buttons on keyboard, mouse and gamepad](docs/images/screen.png)
+![The Trainer Controls screen: game buttons on keyboard, mouse and gamepad](docs/images/screen.jpg)
 
-![Game functions on the same screen](docs/images/screen-functions.png)
+![Field shortcuts on the same screen: Cut, Surf, Fly and the rest](docs/images/screen-shortcuts.jpg)
 
 ## What it does
 
