@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+- The Controls panel carries the Controls Badge on its tab in Trainer Desk (0.8.0 or newer; older versions just show the title).
+- The mod is now part of the **Trainer Badges**: a badge, a banner and the family case in the README.
+
 ## 0.2.5
 
 - Mouse clicks on the controls screen land where you click when Trainer Desk is on. The screen took the game picture to start at the window's corner, so with docks around the game every click was read too far to the right and down: Close did nothing and a click on a cell could open another one.

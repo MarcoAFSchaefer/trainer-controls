@@ -538,7 +538,31 @@ return function(mod)
     local language = tostring(option("language"))
     if docked and docked.api == api and docked.language == language then return end
     undock()
-    api.register({ id = "trainer_controls.controls", title = T("TITLE"), width = 480, height = 432, pixel = 1,
+    api.register({
+      icon = (function()
+        -- The Controls Badge, this mod's mark in the Trainer Badges family: drawn
+        -- here, on a 100-unit square, so no picture file is needed.
+        local G = love.graphics
+        local SHAPE, LIGHT, DARK = { 36,10, 64,10, 64,36, 90,36, 90,64, 64,64, 64,90, 36,90, 36,64, 10,64, 10,36, 36,36 }, { 34,34, 66,34, 66,66, 34,66 }, { 36,66, 64,66, 64,90, 36,90 }
+        local function fillAt(pts, x, y, k, f)
+          local t = {}
+          for i = 1, #pts, 2 do
+            t[i], t[i + 1] = x + (50 + (pts[i] - 50) * f) * k, y + (50 + (pts[i + 1] - 50) * f) * k
+          end
+          local ok, tris = pcall(love.math.triangulate, t)
+          if ok then for _, tri in ipairs(tris) do G.polygon("fill", tri) end end
+        end
+        return function(x, y, size, alpha)
+          local k, a = size / 100, alpha or 1
+          local r, g, b, a0 = G.getColor()
+          G.setColor(0.85, 0.88, 0.92, a); fillAt(SHAPE, x, y, k, 1)
+          G.setColor(0.54, 0.34, 0.88, a); fillAt(SHAPE, x, y, k, 0.8)
+          G.setColor(1, 1, 1, 0.3 * a); fillAt(LIGHT, x, y, k, 0.8)
+          G.setColor(0, 0, 0, 0.28 * a); fillAt(DARK, x, y, k, 0.8)
+          G.setColor(r, g, b, a0)
+        end
+      end)(),
+      id = "trainer_controls.controls", title = T("TITLE"), width = 480, height = 432, pixel = 1,
       responsive = true, interval = 0.1, side = "right",
       draw = function(_, w, h)
         if api.theme then UI.theme(api.theme().colors) end
