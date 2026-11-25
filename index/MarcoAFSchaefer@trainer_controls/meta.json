@@ -30,6 +30,8 @@
     "engine_internals"
   ],
   "dependencies": [],
-  "conflicts": [],
+  "conflicts": [
+    "pad_shortcuts"
+  ],
   "license": "MIT"
 }
