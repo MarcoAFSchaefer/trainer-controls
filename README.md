@@ -1,3 +1,5 @@
+![Trainer Controls: the Controls Badge of the Trainer Badges](docs/brand/banner.png)
+
 # Trainer Controls
 
 Control mapping for Pokémon FireRed/LeafGreen on Gen1Recomp (mod API 3): every button of the game, its functions and a set of field shortcuts, on keyboard, mouse and gamepad.
@@ -80,6 +82,21 @@ end
 - One layout for every gamepad; two gamepads act as one.
 - No combinations (two buttons for one action).
 - Touch controls are not changed.
+
+## The Trainer Badges
+
+Six mods for FireRed and LeafGreen that work on their own and better together. Each one is a badge in the same case.
+
+![The six Trainer Badges: Desk, Lens, Pilot, Journey, Controls and Tactics](docs/brand/case.png)
+
+| | Mod | What it does |
+| --- | --- | --- |
+| <img src="https://raw.githubusercontent.com/MarcoAFSchaefer/trainer-desk/main/docs/brand/badge.png" width="40" alt=""> | [Trainer Desk](https://github.com/MarcoAFSchaefer/trainer-desk) | Docks and tabs around the game. |
+| <img src="https://raw.githubusercontent.com/MarcoAFSchaefer/trainer-lens/main/docs/brand/badge.png" width="40" alt=""> | [Trainer Lens](https://github.com/MarcoAFSchaefer/trainer-lens) | Everything the game knows, on screen. |
+| <img src="https://raw.githubusercontent.com/MarcoAFSchaefer/trainer-pilot/main/docs/brand/badge.png" width="40" alt=""> | [Trainer Pilot](https://github.com/MarcoAFSchaefer/trainer-pilot) | Trains and hunts while you are away. |
+| <img src="https://raw.githubusercontent.com/MarcoAFSchaefer/trainer-journey/main/docs/brand/badge.png" width="40" alt=""> | [Trainer Journey](https://github.com/MarcoAFSchaefer/trainer-journey) | Where to go next, without spoilers. |
+| <img src="https://raw.githubusercontent.com/MarcoAFSchaefer/trainer-controls/main/docs/brand/badge.png" width="40" alt=""> | **Trainer Controls** (this mod) | Every button, where you want it. |
+| <img src="https://raw.githubusercontent.com/MarcoAFSchaefer/trainer-tactics/main/docs/brand/badge.png" width="40" alt=""> | [Trainer Tactics](https://github.com/MarcoAFSchaefer/trainer-tactics) | The best play, with the numbers. |
 
 ## What it changes in the game
 
