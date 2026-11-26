@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- The controls you set now belong to the save that is open, kept in the game's per-save store for mods; they used to be the same for every save and every open copy of the game. A save with no controls of its own yet starts from the ones there were.
+
 ## 0.3.0
 
 - The Controls panel carries the Controls Badge on its tab in Trainer Desk (0.8.0 or newer; older versions just show the title).

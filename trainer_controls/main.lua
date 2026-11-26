@@ -22,7 +22,7 @@
 -- conflict: it is allowed, shown on the screen, and only one of them answers
 -- (a field shortcut before anything else on the map, else the first in the list).
 --
--- Bindings are kept in the mod cache (bindings/v1). The controls screen opens
+-- Bindings are kept per save (the shared mod cache, bindings/v1, is where a new save starts from). The controls screen opens
 -- over the game (F8 by default) and the same list is a Trainer Desk panel.
 return function(mod)
   if mod.generation ~= nil and mod.generation ~= 3 then return end
@@ -174,6 +174,49 @@ return function(mod)
     end
     return n
   end
+  -- What belongs to one save. The game keeps a store for mods per save slot
+  -- (mod.storage); the shared cache (mod.cache) is the same for every save and
+  -- for every copy of the game that is open. A save that has nothing of its own
+  -- yet starts from what the shared cache holds, and from then on keeps its own.
+  local PerSave = { values = nil, id = nil, checked = -math.huge, listeners = {}, dirty = false, wrote = 0 }
+  local function perSaveFlush()
+    if not (PerSave.dirty and PerSave.values) then return end
+    PerSave.dirty, PerSave.wrote = false, love.timer.getTime()
+    pcall(mod.storage.write, mod.storage, PerSave.game, "state", PerSave.values)
+  end
+  -- Which save is open: asked when the session changes, at most every few seconds.
+  local function perSaveBind(g)
+    if not (type(g) == "table" and g.session and g.save and g.phase == "field"
+        and type(mod.storage) == "table" and mod.storage.context and mod.storage.read and mod.storage.write) then return end
+    local now = love.timer.getTime()
+    if PerSave.dirty and now - PerSave.wrote >= 2 then perSaveFlush() end
+    if PerSave.session == g.session or now - PerSave.checked < 5 then return end
+    PerSave.session, PerSave.checked = g.session, now
+    local ok, context = pcall(mod.storage.context, mod.storage, g)
+    local id = ok and type(context) == "table" and context.playthroughId or nil
+    if id and id ~= PerSave.id then
+      perSaveFlush()
+      local okRead, data = pcall(mod.storage.read, mod.storage, g, "state")
+      PerSave.id, PerSave.game, PerSave.values = id, g, okRead and type(data) == "table" and data or {}
+      for _, listener in ipairs(PerSave.listeners) do pcall(listener) end
+    end
+  end
+  local function perSaveRead(key)
+    local own = PerSave.values and PerSave.values[key]
+    if type(own) == "string" then return own end
+    return mod.cache and mod.cache.read and mod.cache:read(key) or nil
+  end
+  -- `soon`: written at once (a setting); otherwise within two seconds (a counter).
+  local function perSaveWrite(key, text, soon)
+    if not PerSave.values then
+      -- no save open yet: the shared cache, as it always was
+      if mod.cache and mod.cache.write then mod.cache:write(key, text) end
+      return
+    end
+    if PerSave.values[key] == text then return end
+    PerSave.values[key], PerSave.dirty = text, true
+    if soon then perSaveFlush() end
+  end
   local function save()
     local lines = {}
     for id, slots in pairs(bindings) do
@@ -182,7 +225,7 @@ return function(mod)
       end
     end
     table.sort(lines)
-    if mod.cache and mod.cache.write then mod.cache:write("bindings/v1", "v1\n" .. table.concat(lines, "\n") .. "\n") end
+    perSaveWrite("bindings/v1", "v1\n" .. table.concat(lines, "\n") .. "\n", true)
   end
   local function defaults()
     bindings = {}
@@ -193,7 +236,7 @@ return function(mod)
     reindex()
   end
   local function loadBindings()
-    local text = mod.cache and mod.cache.read and mod.cache:read("bindings/v1")
+    local text = perSaveRead("bindings/v1")
     if type(text) ~= "string" or not text:match("^v1") then return defaults() end
     bindings = {}
     for id, slot, token in text:gmatch("\n([%w_%.%-]+) (%d) ([^\n]+)") do
@@ -206,6 +249,7 @@ return function(mod)
     reindex()
   end
   loadBindings()
+  PerSave.listeners[#PerSave.listeners + 1] = loadBindings   -- another save was opened: its own controls
 
   local function deviceOf(token) return token:sub(1, 4) == "pad:" and "pad" or "kb" end
   local function clear(id, slot)
@@ -575,6 +619,7 @@ return function(mod)
     docked = { api = api, language = language }
   end
   mod.hooks:wrap("core.update", function(nextHook, g, dt)
+    pcall(perSaveBind, g)
     pcall(function()
       local api = game and dockApi()
       if api then syncDock(api) else undock() end
